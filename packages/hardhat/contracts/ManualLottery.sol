@@ -8,6 +8,8 @@ contract ManualLottery {
     address[] public participants;
     mapping(address => bool) public hasJoined;
 
+    event ParticipantJoined(address indexed participant);
+
     constructor() {
         owner = msg.sender;
     }
@@ -15,5 +17,19 @@ contract ManualLottery {
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
         _;
+    }
+
+    function joinLottery() external {
+        require(!isFinished, "Lottery is finished");
+        require(!hasJoined[msg.sender], "Participant already joined");
+
+        hasJoined[msg.sender] = true;
+        participants.push(msg.sender);
+
+        emit ParticipantJoined(msg.sender);
+    }
+
+    function getParticipants() external view returns (address[] memory) {
+        return participants;
     }
 }
