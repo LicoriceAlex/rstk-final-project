@@ -9,6 +9,7 @@ contract ManualLottery {
     mapping(address => bool) public hasJoined;
 
     event ParticipantJoined(address indexed participant);
+    event WinnerSelected(address indexed winner);
 
     constructor() {
         owner = msg.sender;
@@ -31,5 +32,15 @@ contract ManualLottery {
 
     function getParticipants() external view returns (address[] memory) {
         return participants;
+    }
+
+    function selectWinner(address _winner) external onlyOwner {
+        require(!isFinished, "Lottery is already finished");
+        require(hasJoined[_winner], "Winner must be a participant");
+
+        winner = _winner;
+        isFinished = true;
+
+        emit WinnerSelected(_winner);
     }
 }
